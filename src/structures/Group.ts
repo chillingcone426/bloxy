@@ -201,6 +201,26 @@ export class GroupBase {
         return this.client.getGroup(this.id);
     }
 
+    getMember (userId: number): Promise<GroupMember | null> {
+        return this.client.apis.groupsAPI.getUserGroups({
+            userId
+        })
+            .then(response => {
+                const foundGroup = response.data.find(groupData => groupData.group.id === this.id);
+
+                if (foundGroup) {
+                    // eslint-disable-next-line @typescript-eslint/no-use-before-define
+                    return new GroupMember({
+                        id: userId,
+                        role: foundGroup.role,
+                        group: foundGroup.group
+                    }, this.client);
+                } else {
+                    return null;
+                }
+            });
+    }
+
     getIsMember (userId: number): Promise<GroupMember | null> {
         return this.client.apis.groupsAPI.getUserGroups({
             userId
